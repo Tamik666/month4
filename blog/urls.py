@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from posts.views import (test, main_page_view, post_list_view, post_detail_view)
+from django.contrib.staticfiles.urls import static
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +26,6 @@ urlpatterns = [
     path("", main_page_view),
     path('posts/', post_list_view),
     path("posts/<int:post_id>/", post_detail_view),
-]
+    path("posts/<int:post_id>/comments/", post_detail_view),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(
+    settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
