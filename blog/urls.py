@@ -19,6 +19,7 @@ from django.urls import path
 from posts.views import (test, main_page_view, post_list_view, post_detail_view, post_create_new)
 from django.contrib.staticfiles.urls import static
 from django.conf import settings
+from users.views import register_view, login_view, logout_view
 
 urlpatterns = (
     [
@@ -29,6 +30,9 @@ urlpatterns = (
         path("posts/<int:post_id>/", post_detail_view),
         path("posts/<int:post_id>/comments/", post_detail_view),
         path("posts/create/", post_create_new),
+        path("register/", register_view),
+        path("login/", login_view),
+        path("logout/", logout_view),
     ] 
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
     + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
