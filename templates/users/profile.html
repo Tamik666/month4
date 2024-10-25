@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<h1 class="mt-5 text-center">Profile</h1>
+
+
+<div class="container text-center">
+   <img src="/media/{{ user.profile.image }}" alt="Profile picture" class="rounded-circle mx-auto d-block" style="width: 200px; height: 200px;">
+   <h2>{{ user.username }}</h2>
+   <p>{{ user.first_name }} {{ user.last_name }}</p>
+   <p>{{ user.email }}</p>
+   <p>{{ user.profile.age }}</p>
+
+
+   <div class="d-flex flex-wrap justify-content-center mt-4">
+       {% for post in posts %}
+       <div class="card m-2" style="width: 18rem;">
+           {% if post.image %}
+               <img src="{{ post.image.url }}" class="card-img-top" alt="Post image">
+           {% else %}
+               <img src="{% static 'posts/placeholder.jpg' %}" class="card-img-top" alt="Placeholder image">
+           {% endif %}
+           <div class="card-body">
+               <h5 class="card-title">{{ post.title }}</h5>
+               <p class="card-text">{{ post.content }}</p>
+               <p class="card-text">Rating: {{ post.rate }}</p>
+               <p class="card-text">Created: {{ post.created_at }}</p>
+               <p class="card-text">Updated: {{ post.updated_at }}</p>
+               <a href="/posts/{{ post.id }}/" class="btn btn-primary">Go to post</a>
+           </div>
+       </div>
+       {% endfor %}
+   </div>
+</div>
+
+
+
+
+
+{% endblock %}

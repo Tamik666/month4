@@ -16,10 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from posts.views import (test, main_page_view, post_list_view, post_detail_view, post_create_new)
+from posts.views import (test, main_page_view, post_list_view, post_detail_view, post_create_new, post_update_view, PostListView2, PostDetailView2)
 from django.contrib.staticfiles.urls import static
 from django.conf import settings
-from users.views import register_view, login_view, logout_view
+from users.views import (register_view, login_view, logout_view, profile_view)
 
 urlpatterns = (
     [
@@ -33,6 +33,10 @@ urlpatterns = (
         path("register/", register_view),
         path("login/", login_view),
         path("logout/", logout_view),
+        path("profile/", profile_view),
+        path("posts/<int:post_id>/update/", post_update_view),
+        path("posts/", PostListView2.as_view()),
+        path("posts/<int:pk>/", PostDetailView2.as_view(), name="post_detail_view"),
     ] 
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
     + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)

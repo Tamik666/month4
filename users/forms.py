@@ -3,6 +3,8 @@ from django import forms
 from posts.models import Tag
 
 class RegisterForm(forms.Form):
+    image = forms.ImageField()
+    age = forms.IntegerField()
     username = forms.CharField()
     email = forms.EmailField()
     first_name = forms.CharField()

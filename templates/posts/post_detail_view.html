@@ -9,12 +9,24 @@
   {% else %}
     <img src="{% static 'posts/placeholer.jpg' %}">
   {% endif %}
-    <div class="card-body">
-      <h5 class="card-title">{{post.title}}</h5>
-      <p class="card-text">{{post.content}}</p>
-      <p class="card-text">{{post.rate}}</p>
-      <p class="card-text">{{post.created_at}}</p>
-      <p class="card-text">{{post.updated_at}}</p>
+  <div class="card-body">
+    <h5 class="card-title">{{post.title}}</h5>
+    <p class="card-text">{{post.content}}</p>
+    <p class="card-text">{{post.rate}}</p>
+    <p class="card-text">{{post.created_at}}</p>
+    <p class="card-text">{{post.updated_at}}</p>
+      <form href="/posts/{{post.id}}/comment/"  method="post" >
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit">Comment</button>
+      </form>
+      {% for comment in post.comment_set.all %}
+      <div class="card" style="width: 16rem;">
+        <div class="card-body">
+          <h5 class="card-title">{{comment.text}}</h5>
+        </div>
+      </div>
+    {% endfor %}
     </div>
   </div>
 {% endblock %}

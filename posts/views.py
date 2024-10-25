@@ -1,10 +1,11 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
-from posts.models import Post
-from posts.forms import (PostForm, PostForm2, SearchForm)
+from posts.models import Post, Comment
+from posts.forms import (PostForm, PostForm2, SearchForm,CommentForm)
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 import random
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 
 def test(request):
@@ -56,22 +57,72 @@ def post_list_view(request):
             request, 'posts/post_list.html', 
             context=context
             )
-    
+
+class PostListView2(ListView):
+    model = Post
+    template_name = 'posts/post_list.html'
+    context_object_name = 'posts'
+
 @login_required(login_url="/login/")
 def post_detail_view(request, post_id):
+    post = Post.objects.get(id=post_id)
+    comments = post.comments.all()
+    
     if request.method == 'GET':
-        post = Post.objects.get(id=post_id)
-        return render(request, 'posts/post_detail_view.html', context={'post': post})  
+        form = CommentForm()
+        return render(request, 'posts/post_detail_view.html', context={'post': post, 'form': form, 'comments': comments})  
+    
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            Comment.objects.create(
+                text=form.cleaned_data['text'], 
+                post=post, 
+                user=request.user
+            )
+            return redirect(f"/posts/{post_id}")
+
+        # При ошибке валидации отобразить форму с ошибками
+        return render(request, 'posts/post_detail_view.html', context={'post': post, 'form': form, 'comments': comments})
+
 
 @login_required(login_url="/login/")
 def post_create_new(request):
     if request.method == 'GET':
-        form = PostForm2()
+        form = PostForm()
         return render(request, 'posts/post_create.html', context={'form': form})
     if request.method == 'POST':
-        form = PostForm2(request.POST, request.FILES)
+        form = PostForm(request.POST, request.FILES)
         if not form.is_valid():
             return render(request,"post_create.html", context={"form":form})
+        tags = form.cleaned_data.pop('tags')
+        post = Post.objects.create(author=request.user, **form.cleaned_data)
+        post.tags.set(tags)
+        post.save()
+        return redirect("/posts/")
+    
+
+class PostDetailView2(DetailView):
+    model = Post
+    template_name = 'posts/post_detail_view.html'
+    context_object_name = 'post'
+    lookup_url_kwarg = 'post_id'
+
+def post_update_view(request, post_id):
+    post = Post.objects.get(id=post_id)
+    if request.method == "GET":
+        form=PostForm2(instance=post)
+        return render(request, 'posts/post_update.html', context={'form': form})
+    if request.method == "POST":
+        form = PostForm2(request.POST, request.FILES, instance=post)
+        if not form.is_valid():
+            return render(request, "post_create.html", context={"form": form})
         form.save()
         return redirect("/posts/")
     
+def post_add_coment(request, post_id):
+    if request.method == 'POST':
+        post = Post.objects.get(id=post_id)
+        post.rate += 1
+        post.save()
+        return redirect("/posts/")

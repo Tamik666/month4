@@ -1,11 +1,15 @@
 from django import forms
-from .models import Post, Tag
+from posts.models import Post, Tag
+from posts.models import Comment
 
 class PostForm(forms.Form):
     image = forms.ImageField()
     title = forms.CharField()
     content = forms.CharField()
     rate = forms.IntegerField(max_value=5, min_value=0)
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+    )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -83,6 +87,16 @@ class SearchForm(forms.Form):
         choices=orderings,
         widget=forms.Select(
             attrs={
+                'class': 'form-control'
+            }
+        )
+    )
+
+class CommentForm(forms.Form):
+    text = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                'placeholder': 'Write your comment here',
                 'class': 'form-control'
             }
         )
