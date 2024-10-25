@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post
+from .models import Post, Tag
 
 class PostForm(forms.Form):
     image = forms.ImageField()
@@ -52,3 +52,38 @@ class PostForm2(forms.ModelForm):
         if title and title.lower() == 'python':
             raise forms.ValidationError('Title cannot be python')
         return title
+    
+class SearchForm(forms.Form):
+    search = forms.CharField(
+        required=False,
+        max_length=100,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Search',
+                'class': 'form-control'
+                
+            }
+        ),
+    )
+    tag = forms.ModelChoiceField(
+        required=False,
+        queryset=Tag.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
+    orderings = (
+        ('title', 'By title'),
+        ("-title", "By title descending"),
+        ("rate", "By rate"),
+        ("-rate", "By rate descending"),
+        ("created_at", "By date"),
+        ("-created_at", "By date descending"),
+    )
+    ordering = forms.ChoiceField(
+        required=False,
+        choices=orderings,
+        widget=forms.Select(
+            attrs={
+                'class': 'form-control'
+            }
+        )
+    )

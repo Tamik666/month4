@@ -1,5 +1,7 @@
 from django import forms
 
+from posts.models import Tag
+
 class RegisterForm(forms.Form):
     username = forms.CharField()
     email = forms.EmailField()
@@ -20,3 +22,4 @@ class RegisterForm(forms.Form):
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+
